@@ -4,17 +4,24 @@ from django.urls import path
 #                      expense_retrieve_api_view,
 #                      expense_put_update_api_view,
 #                      expense_delete )
-from expenses.views import ExpenseCreateAPIView, ExpenseListAPIView, ExpenseRetrieveAPIView, ExpenseUpdateAPIView, \
-    ExpenseDeleteAPIView
+#########################################
+# from expenses.views import ExpenseCreateAPIView, ExpenseListAPIView, ExpenseRetrieveAPIView, ExpenseUpdateAPIView, \
+#     ExpenseDeleteAPIView
+from expenses.views import ExpenseListCreateAPIView, ExpenseRetrieveUpdateDeleteAPIView
 
 urlpatterns = [
-    path('create/', ExpenseCreateAPIView.as_view()),
-    path('list/', ExpenseListAPIView.as_view()),
-    path('expense/<int:pk>/', ExpenseRetrieveAPIView.as_view()),
-    path('expense-update/<int:pk>/', ExpenseUpdateAPIView.as_view()),
-    path('expense-delete/<int:pk>/', ExpenseDeleteAPIView.as_view()),
+    path('<int:pk>/', ExpenseRetrieveUpdateDeleteAPIView.as_view()),
+    path('', ExpenseListCreateAPIView.as_view()),
 ]
-
+#######################################################3
+# urlpatterns = [
+#     path('create/', ExpenseCreateAPIView.as_view()),
+#     path('list/', ExpenseListAPIView.as_view()),
+#     path('expense/<int:pk>/', ExpenseRetrieveAPIView.as_view()),
+#     path('expense-update/<int:pk>/', ExpenseUpdateAPIView.as_view()),
+#     path('expense-delete/<int:pk>/', ExpenseDeleteAPIView.as_view()),
+# ]
+####################################################################3
 # urlpatterns = [
 #     path('create/', expense_create_view
 #          , name='expense_create'),

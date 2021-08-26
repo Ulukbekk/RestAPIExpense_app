@@ -12,47 +12,57 @@ from users.models import Account
 from rest_framework import generics, permissions
 
 
-class ExpenseCreateAPIView(generics.CreateAPIView):
+
+class ExpenseListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ExpenseSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
         serializer.save(account=self.request.user.account)
 
-class ExpenseListAPIView(generics.ListAPIView):
-    serializer_class = ExpenseSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-
     def get_queryset(self):
         return Expense.objects.filter(account=self.request.user.account)
 
-class ExpenseRetrieveAPIView(generics.RetrieveAPIView):
-    queryset = Expense.objects.all()
-    serializer_class = ExpenseDetailSerializer
-    permission_classes = (permissions.IsAuthenticated, IsOwner)
-
-class ExpenseUpdateAPIView(generics.UpdateAPIView):
+class ExpenseRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
     permission_classes = (permissions.IsAuthenticated, IsOwner)
+#
+# class ExpenseCreateAPIView(generics.CreateAPIView):
+#     serializer_class = ExpenseSerializer
+#     permission_classes = (permissions.IsAuthenticated,)
+#
+#     def perform_create(self, serializer):
+#         serializer.save(account=self.request.user.account)
+#
+# class ExpenseListAPIView(generics.ListAPIView):
+#     serializer_class = ExpenseSerializer
+#     permission_classes = (permissions.IsAuthenticated,)
+#
+#     def get_queryset(self):
+#         return Expense.objects.filter(account=self.request.user.account)
+#
+# class ExpenseRetrieveAPIView(generics.RetrieveAPIView):
+#     queryset = Expense.objects.all()
+#     serializer_class = ExpenseDetailSerializer
+#     permission_classes = (permissions.IsAuthenticated, IsOwner)
+#
+# class ExpenseUpdateAPIView(generics.UpdateAPIView):
+#     queryset = Expense.objects.all()
+#     serializer_class = ExpenseSerializer
+#     permission_classes = (permissions.IsAuthenticated, IsOwner)
+#
+# class ExpenseDeleteAPIView(generics.DestroyAPIView):
+#     queryset = Expense.objects.all()
+#     serializer_class = ExpenseSerializer
+#     permission_classes = (permissions.IsAuthenticated, IsOwner)
+#
+#     def destroy(self, request, *args, **kwargs):
+#         instance = self.get_object()
+#         self.perform_destroy(instance)
+#         return Response('Deleted',status=status.HTTP_204_NO_CONTENT)
 
-class ExpenseDeleteAPIView(generics.DestroyAPIView):
-    queryset = Expense.objects.all()
-    serializer_class = ExpenseSerializer
-    permission_classes = (permissions.IsAuthenticated, IsOwner)
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response('Deleted',status=status.HTTP_204_NO_CONTENT)
-
-
-
-
-
-
-
-
+##########################################################################
 # @csrf_exempt
 # @api_view(['POST'])
 # def expense_create_view(request):
