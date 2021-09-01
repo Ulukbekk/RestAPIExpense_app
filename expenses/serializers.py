@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from expenses.models import Expense
+from expenses.models import Expense, Category
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
@@ -22,4 +22,9 @@ class ExpenseDetailSerializer(serializers.ModelSerializer):
                   'date_created')
 
         depth = 1
+
+class CategoryDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('title',)
 

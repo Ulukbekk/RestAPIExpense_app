@@ -39,3 +39,8 @@ class AccountRegistrationSerializer(serializers.ModelSerializer):
             salary=validated_data['salary']
         )
         return account
+
+class AccountDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ('first_name', 'last_name', 'email', 'salary', 'balance')

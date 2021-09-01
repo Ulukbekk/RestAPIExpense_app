@@ -1,33 +1,54 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from expenses.models import Expense, Category
 from expenses.permissions import IsOwner
-from expenses.serializers import ExpenseSerializer, ExpenseDetailSerializer
+from expenses.serializers import ExpenseSerializer, ExpenseDetailSerializer, CategoryDetailSerializer
+from expenses.services import TopUpService
+from expenses.validators import TopUpValidator
 from users.models import Account
 from rest_framework import generics, permissions
 
-
-
-class ExpenseListCreateAPIView(generics.ListCreateAPIView):
+class ExpenseViewSet(viewsets.ModelViewSet):
     serializer_class = ExpenseSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def perform_create(self, serializer):
-        serializer.save(account=self.request.user.account)
-
-    def get_queryset(self):
-        return Expense.objects.filter(account=self.request.user.account)
-
-class ExpenseRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Expense.objects.all()
-    serializer_class = ExpenseSerializer
     permission_classes = (permissions.IsAuthenticated, IsOwner)
+
+class CategoryDetailAPIView(generics.RetrieveAPIView):
+    serializer_class = CategoryDetailSerializer
+    queryset = Category.objects.all()
+
+class BalanceIncreaseAPIView(generics.GenericAPIView):
+    validator_class = TopUpValidator
+    service_class = TopUpService
+    def post(self, request, *args, **kwargs):
+        balance = request.data.get('balance')
+        if not self.validator_class.validator_balance(balance):
+            return Response('Pass balance to top-up', status=status.HTTP_400_BAD_REQUEST)
+        self.service_class.top_up(request.user, balance)
+        return Response('Ok', status=status.HTTP_200_OK)
+# class ExpenseListCreateAPIView(generics.ListCreateAPIView):
+#     """
+#     This endpoint creates on expense to logged in user
+#     or gives a list of available expensesx
+#     """
+#     serializer_class = ExpenseSerializer
 #
+#     def perform_create(self, serializer):
+#         serializer.save(account=self.request.user.account)
+#
+#     def get_queryset(self):
+#         return Expense.objects.filter(account=self.request.user.account)
+#
+# class ExpenseRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Expense.objects.all()
+#     serializer_class = ExpenseSerializer
+#     permission_classes = (permissions.IsAuthenticated, IsOwner)
+###################################################
 # class ExpenseCreateAPIView(generics.CreateAPIView):
 #     serializer_class = ExpenseSerializer
 #     permission_classes = (permissions.IsAuthenticated,)
